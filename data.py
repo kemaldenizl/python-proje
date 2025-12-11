@@ -12,4 +12,4 @@ dataForClustering = df[["longitude","latitude","median_income"]]
 
 dataForRegression = df[["longitude","latitude","median_income","median_house_value"]]
 
-dataForClassification = df[["longitude","latitude","median_income","median_house_value","ocean_proximity"]]
+dataForClassification = df[["longitude","latitude","housing_median_age","total_rooms","total_bedrooms","population","households","median_income","median_house_value","ocean_proximity"]]

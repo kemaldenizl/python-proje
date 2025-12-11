@@ -23,13 +23,15 @@ from data import dataForClassification
 class OceanProximityClassifier:
     """California okyanus yakınlığı sınıflandırma modeli (Random Forest)"""
     
-    def __init__(self, n_estimators=100, max_depth=15, random_state=42):
+    def __init__(self, n_estimators=100, max_depth=10, random_state=42):
         self.n_estimators = n_estimators
         self.max_depth = max_depth
         self.random_state = random_state
         self.model = RandomForestClassifier(
             n_estimators=n_estimators,
             max_depth=max_depth,
+            min_samples_split=5,  # Overfitting önleme
+            min_samples_leaf=2,   # Overfitting önleme
             random_state=random_state,
             n_jobs=-1
         )
@@ -40,7 +42,12 @@ class OceanProximityClassifier:
         self.y_train = None
         self.y_test = None
         self.y_pred = None
-        self.feature_names = ['longitude', 'latitude', 'median_income', 'median_house_value']
+        self.y_train_pred = None  # Overfitting kontrolü için
+        self.feature_names = [
+            'longitude', 'latitude', 'housing_median_age', 
+            'total_rooms', 'total_bedrooms', 'population', 
+            'households', 'median_income', 'median_house_value'
+        ]
         self.target_name = 'ocean_proximity'
         self.class_names = None
     
@@ -72,6 +79,7 @@ class OceanProximityClassifier:
         
         self.model.fit(self.X_train, self.y_train)
         self.y_pred = self.model.predict(self.X_test)
+        self.y_train_pred = self.model.predict(self.X_train)  # Overfitting kontrolü
         
         return self.model
     
@@ -89,12 +97,14 @@ class OceanProximityClassifier:
             self.train()
         
         accuracy = accuracy_score(self.y_test, self.y_pred)
+        train_accuracy = accuracy_score(self.y_train, self.y_train_pred)
         precision = precision_score(self.y_test, self.y_pred, average='weighted')
         recall = recall_score(self.y_test, self.y_pred, average='weighted')
         f1 = f1_score(self.y_test, self.y_pred, average='weighted')
         
         return {
             'accuracy': accuracy,
+            'train_accuracy': train_accuracy,
             'precision': precision,
             'recall': recall,
             'f1': f1
@@ -146,6 +156,17 @@ class OceanProximityClassifier:
         print(f"   ├─ Maksimum Derinlik: {self.max_depth}")
         print(f"   └─ Eğitim/Test Oranı: {len(self.X_train)}/{len(self.X_test)}")
         
+        # Overfitting Kontrolü
+        overfit_diff = metrics['train_accuracy'] - metrics['accuracy']
+        print("\n🔍 OVERFITTİNG KONTROLÜ:")
+        print(f"   ├─ Train Accuracy: {metrics['train_accuracy']:.4f} ({metrics['train_accuracy']*100:.1f}%)")
+        print(f"   ├─ Test Accuracy:  {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.1f}%)")
+        print(f"   └─ Fark:           {overfit_diff:.4f} ({overfit_diff*100:.1f}%)")
+        if overfit_diff > 0.05:
+            print("   ⚠️  UYARI: Train-Test farkı >5%, overfitting olabilir!")
+        else:
+            print("   ✅ Model dengeli görünüyor (fark ≤5%)")
+        
         print("\n📈 GENEL PERFORMANS METRİKLERİ:")
         print(f"   ├─ Accuracy:  {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.1f}%)")
         print(f"   ├─ Precision: {metrics['precision']:.4f}")
@@ -191,7 +212,7 @@ class OceanProximityClassifier:
 
 # Ana çalıştırma
 if __name__ == "__main__":
-    model = OceanProximityClassifier(n_estimators=100, max_depth=15)
+    model = OceanProximityClassifier(n_estimators=100, max_depth=10)
     model.prepare_data()
     model.train()
     model.print_stats()

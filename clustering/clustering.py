@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture
 import warnings
 import sys
 import os
@@ -14,14 +14,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data import dataForClustering
 
 class IncomeClusteringModel:
-    """California gelir bazlı K-Means kümeleme modeli"""
+    """California gelir bazlı GMM (Gaussian Mixture Model) kümeleme modeli"""
     
     # 5 gelir seviyesi için etiketler (en yüksekten en düşüğe)
     INCOME_LABELS = ['Süper Zengin', 'Zengin', 'Orta', 'Fakir', 'Çok Fakir']
     
     def __init__(self, n_clusters=5):
         self.n_clusters = n_clusters
-        self.kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        self.gmm = GaussianMixture(n_components=n_clusters, random_state=42, n_init=10)
         self.data = None
         self.clusters = None
         self.cluster_centers = None
@@ -42,10 +42,11 @@ class IncomeClusteringModel:
         
         # Sadece gelir bazlı kümeleme
         income_data = self.data[['median_income']].values
-        self.clusters = self.kmeans.fit_predict(income_data)
+        self.gmm.fit(income_data)
+        self.clusters = self.gmm.predict(income_data)
         
-        # Küme merkezlerini hesapla
-        self.cluster_centers = self.kmeans.cluster_centers_
+        # Küme merkezlerini hesapla (GMM'de means_ kullanılır)
+        self.cluster_centers = self.gmm.means_
         self.income_by_cluster = {i: self.cluster_centers[i][0] for i in range(self.n_clusters)}
         
         # Kümeleri gelire göre sırala (yüksekten düşüğe)
@@ -88,7 +89,7 @@ class IncomeClusteringModel:
         """İstatistikleri yazdır"""
         stats = self.get_cluster_stats()
         print("=" * 50)
-        print("K-MEANS KÜMELEME SONUÇLARI (5 GELİR SEVİYESİ)")
+        print("GMM KÜMELEME SONUÇLARI (5 GELİR SEVİYESİ)")
         print("=" * 50)
         
         # Gelire göre sıralı yazdır
