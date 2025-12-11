@@ -91,7 +91,7 @@ def create_prediction_plots(model, save_path=None):
     
     # Kaydet
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'regression_results.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'regression_results.png')
     
     # Sağ alt köşeye tarih/saat ekle
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -145,7 +145,7 @@ def create_price_map(model, save_path=None):
     
     # Kaydet
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'california_price_map.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_price_map.png')
     
     # Sağ alt köşeye tarih/saat ekle
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')

@@ -52,7 +52,7 @@ def create_confusion_matrix_plot(model, save_path=None):
     plt.tight_layout()
     
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'confusion_matrix.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'confusion_matrix.png')
     
     # Sağ alt köşeye tarih/saat ekle
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -152,7 +152,7 @@ def create_performance_plots(model, save_path=None):
     plt.tight_layout()
     
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'classification_performance.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'classification_performance.png')
     
     # Sağ alt köşeye tarih/saat ekle
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -208,7 +208,7 @@ def create_precision_recall_heatmap(model, save_path=None):
     plt.tight_layout()
     
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'precision_recall_heatmap.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'precision_recall_heatmap.png')
     
     # Sağ alt köşeye tarih/saat ekle
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -265,7 +265,7 @@ def create_geographic_classification_map(model, save_path=None):
     plt.tight_layout()
     
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'california_ocean_proximity_map.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_ocean_proximity_map.png')
     
     # Sağ alt köşeye tarih/saat ekle
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')

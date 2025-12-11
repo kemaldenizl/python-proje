@@ -93,7 +93,7 @@ def create_income_map(model, save_path=None):
     
     # Kaydet
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'california_income_map.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_income_map.png')
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)  # Belleği temizle
@@ -174,7 +174,7 @@ def create_geo_map(model, save_path=None):
     
     # Kaydet
     if save_path is None:
-        save_path = os.path.join(os.path.dirname(__file__), 'california_geo_map.png')
+        save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_geo_map.png')
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
