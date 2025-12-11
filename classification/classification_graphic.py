@@ -4,6 +4,7 @@ import seaborn as sns
 from sklearn.metrics import ConfusionMatrixDisplay, roc_curve, auc
 from sklearn.preprocessing import label_binarize
 import os
+from datetime import datetime
 
 # Classification modelini import et
 from classification import OceanProximityClassifier
@@ -53,6 +54,11 @@ def create_confusion_matrix_plot(model, save_path=None):
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'confusion_matrix.png')
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, fontsize=9, color='gray', alpha=0.7,
+                   ha='right', va='bottom', transform=plt.gcf().transFigure)
+    
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"\nConfusion Matrix '{save_path}' olarak kaydedildi.")
     
@@ -90,7 +96,7 @@ def create_performance_plots(model, save_path=None):
     
     # 2. Sınıf bazlı F1-Score
     ax2 = axes[0, 1]
-    class_f1 = [(name, report[name]['f1-score']) for name in model.class_names]
+    class_f1 = [(name, report[name]['f1-score'] if name in report else 0) for name in model.class_names]
     class_f1.sort(key=lambda x: x[1], reverse=True)
     names = [x[0] for x in class_f1]
     f1_scores = [x[1] for x in class_f1]
@@ -148,6 +154,11 @@ def create_performance_plots(model, save_path=None):
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'classification_performance.png')
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    fig.text(0.98, 0.02, timestamp, fontsize=9, color='gray', alpha=0.7,
+             ha='right', va='bottom', transform=fig.transFigure)
+    
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"\nPerformans grafikleri '{save_path}' olarak kaydedildi.")
     
@@ -164,11 +175,14 @@ def create_precision_recall_heatmap(model, save_path=None):
     # Veriyi hazırla
     metrics_data = []
     for name in class_names:
-        metrics_data.append([
-            report[name]['precision'],
-            report[name]['recall'],
-            report[name]['f1-score']
-        ])
+        if name in report:
+            metrics_data.append([
+                report[name]['precision'],
+                report[name]['recall'],
+                report[name]['f1-score']
+            ])
+        else:
+            metrics_data.append([0, 0, 0])
     
     metrics_array = np.array(metrics_data)
     
@@ -195,6 +209,11 @@ def create_precision_recall_heatmap(model, save_path=None):
     
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'precision_recall_heatmap.png')
+    
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, fontsize=9, color='gray', alpha=0.7,
+                   ha='right', va='bottom', transform=plt.gcf().transFigure)
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"\nPrecision-Recall Heatmap '{save_path}' olarak kaydedildi.")
@@ -247,6 +266,11 @@ def create_geographic_classification_map(model, save_path=None):
     
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'california_ocean_proximity_map.png')
+    
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, fontsize=9, color='gray', alpha=0.7,
+                   ha='right', va='bottom', transform=plt.gcf().transFigure)
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"\nCoğrafi harita '{save_path}' olarak kaydedildi.")

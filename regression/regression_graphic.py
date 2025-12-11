@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 
 # Regression modelini import et
 from regression import HousePriceRegressionModel
@@ -92,6 +93,11 @@ def create_prediction_plots(model, save_path=None):
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'regression_results.png')
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    fig.text(0.98, 0.02, timestamp, fontsize=9, color='gray', alpha=0.7,
+             ha='right', va='bottom', transform=fig.transFigure)
+    
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"\nGrafik '{save_path}' olarak kaydedildi.")
     
@@ -140,6 +146,11 @@ def create_price_map(model, save_path=None):
     # Kaydet
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'california_price_map.png')
+    
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, fontsize=9, color='gray', alpha=0.7,
+                   ha='right', va='bottom', transform=plt.gcf().transFigure)
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"\nHarita '{save_path}' olarak kaydedildi.")

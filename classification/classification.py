@@ -23,15 +23,16 @@ from data import dataForClassification
 class OceanProximityClassifier:
     """California okyanus yakınlığı sınıflandırma modeli (Random Forest)"""
     
-    def __init__(self, n_estimators=100, max_depth=10, random_state=42):
+    def __init__(self, n_estimators=200, max_depth=8, random_state=42):
         self.n_estimators = n_estimators
         self.max_depth = max_depth
         self.random_state = random_state
         self.model = RandomForestClassifier(
             n_estimators=n_estimators,
             max_depth=max_depth,
-            min_samples_split=5,  # Overfitting önleme
-            min_samples_leaf=2,   # Overfitting önleme
+            min_samples_split=10,   # Daha güçlü regularizasyon
+            min_samples_leaf=4,     # Daha güçlü regularizasyon
+            class_weight='balanced', # Dengesiz sınıfları dengele
             random_state=random_state,
             n_jobs=-1
         )
@@ -43,6 +44,7 @@ class OceanProximityClassifier:
         self.y_test = None
         self.y_pred = None
         self.y_train_pred = None  # Overfitting kontrolü için
+        # Lat/lon dahil - ocean proximity için gerekli
         self.feature_names = [
             'longitude', 'latitude', 'housing_median_age', 
             'total_rooms', 'total_bedrooms', 'population', 
@@ -51,8 +53,15 @@ class OceanProximityClassifier:
         self.target_name = 'ocean_proximity'
         self.class_names = None
     
-    def prepare_data(self, test_size=0.2):
-        """Veriyi temizle ve eğitim/test setlerine ayır"""
+    def prepare_data(self, test_size=0.2, use_spatial_split=False, grid_size=0.5):
+        """
+        Veriyi temizle ve eğitim/test setlerine ayır.
+        
+        Args:
+            test_size: Test seti oranı (0-1 arası)
+            use_spatial_split: True ise grid-based spatial split kullan (daha zor test)
+            grid_size: Grid hücre boyutu (derece cinsinden, örn: 0.5 derece ≈ 55km)
+        """
         self.data = dataForClassification.dropna().copy()
         self.data = self.data[~self.data.isin([np.inf, -np.inf]).any(axis=1)]
         self.data = self.data.reset_index(drop=True)
@@ -65,10 +74,42 @@ class OceanProximityClassifier:
         y = self.label_encoder.fit_transform(y_raw)
         self.class_names = self.label_encoder.classes_
         
-        # Train/test split
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            X, y, test_size=test_size, random_state=self.random_state, stratify=y
-        )
+        if use_spatial_split:
+            # Spatial (Grid-based) Train/Test Split
+            # Koordinatları doğrudan veriden al (feature'lardan ayrı)
+            lon = self.data['longitude'].values
+            lat = self.data['latitude'].values
+            
+            # Grid hücre ID'lerini hesapla
+            grid_x = np.floor(lon / grid_size).astype(int)
+            grid_y = np.floor(lat / grid_size).astype(int)
+            grid_ids = grid_x * 10000 + grid_y  # Benzersiz grid ID
+            
+            # Benzersiz grid hücrelerini al
+            unique_grids = np.unique(grid_ids)
+            np.random.seed(self.random_state)
+            np.random.shuffle(unique_grids)
+            
+            # Grid hücrelerini test/train olarak ayır
+            n_test_grids = max(1, int(len(unique_grids) * test_size))
+            test_grids = set(unique_grids[:n_test_grids])
+            
+            # Her noktayı train veya test'e ata
+            test_mask = np.isin(grid_ids, list(test_grids))
+            train_mask = ~test_mask
+            
+            self.X_train = X[train_mask]
+            self.X_test = X[test_mask]
+            self.y_train = y[train_mask]
+            self.y_test = y[test_mask]
+            
+            print(f"📍 Spatial Split: {len(unique_grids)} grid hücresi, {n_test_grids} test gridi")
+            print(f"   Train: {len(self.X_train)} | Test: {len(self.X_test)}")
+        else:
+            # Normal random split
+            self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+                X, y, test_size=test_size, random_state=self.random_state, stratify=y
+            )
         
         return self.data
     
@@ -112,14 +153,22 @@ class OceanProximityClassifier:
     
     def get_confusion_matrix(self):
         """Confusion matrix döndür"""
-        return confusion_matrix(self.y_test, self.y_pred)
+        # Tüm sınıflar için labels belirt (spatial split'te eksik olabilir)
+        all_labels = list(range(len(self.class_names)))
+        return confusion_matrix(self.y_test, self.y_pred, labels=all_labels)
     
     def get_classification_report(self):
         """Sınıflandırma raporu döndür"""
+        # Test setinde bulunan sınıfları al
+        unique_labels = np.unique(np.concatenate([self.y_test, self.y_pred]))
+        label_names = [self.class_names[i] for i in unique_labels]
+        
         return classification_report(
             self.y_test, self.y_pred, 
-            target_names=self.class_names, 
-            output_dict=True
+            labels=unique_labels,
+            target_names=label_names, 
+            output_dict=True,
+            zero_division=0
         )
     
     def get_feature_importance(self):
@@ -178,8 +227,11 @@ class OceanProximityClassifier:
         print(f"   {'Sınıf':20} │ Precision │ Recall │ F1-Score │ Destek")
         print("   " + "─" * 60)
         for class_name in self.class_names:
-            r = report[class_name]
-            print(f"   {class_name:20} │   {r['precision']:.2f}    │  {r['recall']:.2f}  │   {r['f1-score']:.2f}   │  {int(r['support'])}")
+            if class_name in report:
+                r = report[class_name]
+                print(f"   {class_name:20} │   {r['precision']:.2f}    │  {r['recall']:.2f}  │   {r['f1-score']:.2f}   │  {int(r['support'])}")
+            else:
+                print(f"   {class_name:20} │   N/A     │  N/A   │   N/A    │  0")
         
         print("\n🎯 ÖZELLİK ÖNEMLERİ:")
         sorted_importance = sorted(importance.items(), key=lambda x: x[1], reverse=True)
