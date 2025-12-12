@@ -130,6 +130,10 @@ def create_confusion_matrix_plot(y_test, y_pred, class_names, save_path=None):
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'confusion_matrix.png')
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
+    
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"✅ Confusion Matrix kaydedildi: {save_path}")
     plt.close()
@@ -188,6 +192,10 @@ def create_performance_plots(y_test, y_pred, class_names, feature_names, model, 
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'classification_performance.png')
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    fig.text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
+    
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"✅ Performans grafikleri kaydedildi: {save_path}")
     plt.close()
@@ -223,6 +231,10 @@ def create_geographic_map(data, model, label_encoder, feature_names, class_names
     
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_ocean_proximity_map.png')
+    
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     print(f"✅ Coğrafi harita kaydedildi: {save_path}")

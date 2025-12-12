@@ -145,6 +145,10 @@ def create_prediction_plots(y_train, y_test, y_pred, feature_names, model, save_
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    fig.text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
+    
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'regression_results.png')
     
@@ -178,6 +182,10 @@ def create_price_map(data, model, feature_names, save_path=None):
     plt.ylim(32, 42)
     
     plt.tight_layout()
+    
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    plt.gcf().text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
     
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_price_map.png')

@@ -136,6 +136,10 @@ def create_income_map(data, clusters, gmm, sorted_clusters, save_path=None):
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_income_map.png')
     
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    fig.text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
+    
     plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     print(f"✅ Gelir haritası kaydedildi: {save_path}")
@@ -186,6 +190,10 @@ def create_geo_map(data, clusters, centers, save_path=None):
     
     if save_path is None:
         save_path = os.path.join(os.path.dirname(__file__), 'images', 'california_geo_map.png')
+    
+    # Sağ alt köşeye tarih/saat ekle
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    fig.text(0.98, 0.02, timestamp, ha='right', va='bottom', fontsize=9, color='gray')
     
     plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
