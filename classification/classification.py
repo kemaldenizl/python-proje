@@ -11,7 +11,7 @@ df = pd.read_csv(csv_path)
 
 data = df[["longitude","latitude","housing_median_age","total_rooms","total_bedrooms","population","households","median_income","median_house_value","ocean_proximity"]]
 
-def prepare_data(test_size=0.2, random_state=42):
+def prepare_data(test_size=0.2, random_state=12):
     data2 = data.dropna().copy()
     data2 = data2[~data2.isin([np.inf, -np.inf]).any(axis=1)]
     data2 = data2.reset_index(drop=True)
@@ -45,7 +45,7 @@ def train_model(X_train, y_train, n_estimators=100, max_depth=15):
     model = RandomForestClassifier(
         n_estimators=n_estimators,
         max_depth=max_depth,
-        class_weight='balanced',  # Dengesiz sınıfları dengele
+        class_weight='balanced',
         random_state=42,
         n_jobs=-1
     )

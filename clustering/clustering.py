@@ -58,11 +58,6 @@ def train_gmm(data, n_clusters=5):
     
     return clusters, gmm, sorted_clusters
 
-
-# ============================================================
-# COĞRAFİ KÜMELEME (Haversine mesafe)
-# ============================================================
-
 def train_geo(data, n_clusters=5, sample_size=2000):
     coords = data[['latitude', 'longitude']].values
     n_samples = len(coords)

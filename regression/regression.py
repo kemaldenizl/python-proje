@@ -9,7 +9,7 @@ df = pd.read_csv(csv_path)
 
 data = df[["longitude","latitude","median_income","median_house_value"]]
 
-def prepare_data(test_size=0.2, random_state=42):
+def prepare_data(test_size=0.2, random_state=12):
 
     data2 = data.dropna().copy()
     data2 = data2[~data2.isin([np.inf, -np.inf]).any(axis=1)]
