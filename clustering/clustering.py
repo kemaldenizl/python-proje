@@ -47,10 +47,9 @@ def haversine_distance_matrix(coords):
 def train_gmm(data, n_clusters=5):
     income_data = data[['median_income']].values
     
-    gmm = GaussianMixture(n_components=n_clusters, random_state=42, n_init=10)
+    gmm = GaussianMixture(n_components=n_clusters, random_state=12, n_init=10)
     clusters = gmm.fit_predict(income_data)
     
-    # Kümeleri gelire göre sırala (yüksekten düşüğe)
     cluster_incomes = {i: gmm.means_[i][0] for i in range(n_clusters)}
     sorted_clusters = sorted(cluster_incomes.keys(), key=lambda x: cluster_incomes[x], reverse=True)
     
