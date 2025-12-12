@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'housing.csv')
 df = pd.read_csv(csv_path)
 
-data = df[["longitude","latitude","median_income","median_house_value"]]
+data = df[["longitude","latitude","median_income","total_rooms","total_bedrooms","population","median_house_value"]]
 
 def prepare_data(test_size=0.2, random_state=12):
 
@@ -15,7 +15,7 @@ def prepare_data(test_size=0.2, random_state=12):
     data2 = data2[~data2.isin([np.inf, -np.inf]).any(axis=1)]
     data2 = data2.reset_index(drop=True)
 
-    feature_names = ['longitude', 'latitude', 'median_income']
+    feature_names = ['longitude', 'latitude', 'median_income','total_rooms','total_bedrooms','population']
     target_name = 'median_house_value'
     
     X = data[feature_names].values
@@ -31,7 +31,7 @@ def prepare_data(test_size=0.2, random_state=12):
     
     return X_train, X_test, y_train, y_test, data, feature_names
 
-def train_model(X_train, y_train, n_estimators=100, max_depth=15):
+def train_model(X_train, y_train, n_estimators=100, max_depth=30):
     model = RandomForestRegressor(
         n_estimators=n_estimators,
         max_depth=max_depth,
