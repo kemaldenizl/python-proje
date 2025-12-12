@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv("housing.csv")
+csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'housing.csv')
+df = pd.read_csv(csv_path)
 
 data = df[["longitude","latitude","median_income","median_house_value"]]
 

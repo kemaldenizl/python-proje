@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-df = pd.read_csv("./housing.csv")
+
+csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'housing.csv')
+df = pd.read_csv(csv_path)
 
 data = df[["longitude","latitude","housing_median_age","total_rooms","total_bedrooms","population","households","median_income","median_house_value","ocean_proximity"]]
 
