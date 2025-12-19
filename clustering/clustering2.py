@@ -188,20 +188,6 @@ if __name__ == "__main__":
     
     clusters_kmeans, kmeans, sorted_clusters_kmeans = train_kmeans(data, n_clusters=5)
     
-    print("\n GMM Kümeleri:")
-    for i, cluster_id in enumerate(sorted_clusters_gmm):
-        count = np.sum(clusters_gmm == cluster_id)
-        avg_income = gmm.means_[cluster_id][0] * 10000
-        if i < len(INCOME_LABELS):
-            print(f"   {INCOME_LABELS[i]}: {count} bölge, ${avg_income:,.0f}")
-    
-    print("\n KMeans Kümeleri:")
-    for i, cluster_id in enumerate(sorted_clusters_kmeans):
-        count = np.sum(clusters_kmeans == cluster_id)
-        avg_income = kmeans.cluster_centers_[cluster_id][0] * 10000
-        if i < len(INCOME_LABELS):
-            print(f"   {INCOME_LABELS[i]}: {count} bölge, ${avg_income:,.0f}")
-    
     print("Grafik Oluşturuluyor")
     
     images_dir = os.path.join(os.path.dirname(__file__), 'images')
